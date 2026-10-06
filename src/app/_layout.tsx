@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider } from '../context/AppContext';
 import { COLORS } from '../constants/theme';
+import '../i18n';
 
 export default function RootLayout() {
   return (
@@ -53,6 +54,27 @@ export default function RootLayout() {
             name="orders/[id]"
             options={{
               title: 'Order Details',
+              presentation: 'card',
+            }}
+          />
+          <Stack.Screen
+            name="profile/edit"
+            options={{
+              title: 'Edit Profile',
+              presentation: 'modal',
+            }}
+          />
+          <Stack.Screen
+            name="profile/business"
+            options={{
+              title: 'Business Information',
+              presentation: 'card',
+            }}
+          />
+          <Stack.Screen
+            name="profile/settings"
+            options={{
+              title: 'Settings & Preferences',
               presentation: 'card',
             }}
           />
