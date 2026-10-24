@@ -1,84 +1,98 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { AppProvider } from '../context/AppContext';
 import { COLORS } from '../constants/theme';
-import '../i18n';
+import { initI18n } from '../i18n';
+
+function AppNavigation() {
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    initI18n();
+  }, []);
+
+  return (
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: COLORS.surface,
+        },
+        headerTintColor: COLORS.textPrimary,
+        headerTitleStyle: {
+          fontWeight: '600',
+          fontSize: 17,
+        },
+        headerShadowVisible: false,
+        contentStyle: {
+          backgroundColor: COLORS.background,
+        },
+      }}
+    >
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="products/[id]"
+        options={{
+          title: t('products.productDetails'),
+          presentation: 'card',
+        }}
+      />
+      <Stack.Screen
+        name="products/create"
+        options={{
+          title: t('products.addNewProduct'),
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="products/edit/[id]"
+        options={{
+          title: t('products.editProduct'),
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="orders/[id]"
+        options={{
+          title: t('orders.orderDetails'),
+          presentation: 'card',
+        }}
+      />
+      <Stack.Screen
+        name="profile/edit"
+        options={{
+          title: t('profile.editProfile'),
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="profile/business"
+        options={{
+          title: t('profile.businessInformation'),
+          presentation: 'card',
+        }}
+      />
+      <Stack.Screen
+        name="profile/settings"
+        options={{
+          title: t('profile.settings'),
+          presentation: 'card',
+        }}
+      />
+    </Stack>
+  );
+}
 
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AppProvider>
         <StatusBar style="dark" />
-        <Stack
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: COLORS.surface,
-            },
-            headerTintColor: COLORS.textPrimary,
-            headerTitleStyle: {
-              fontWeight: '600',
-              fontSize: 17,
-            },
-            headerShadowVisible: false,
-            contentStyle: {
-              backgroundColor: COLORS.background,
-            },
-          }}
-        >
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="products/[id]"
-            options={{
-              title: 'Product Details',
-              presentation: 'card',
-            }}
-          />
-          <Stack.Screen
-            name="products/create"
-            options={{
-              title: 'Add New Product',
-              presentation: 'modal',
-            }}
-          />
-          <Stack.Screen
-            name="products/edit/[id]"
-            options={{
-              title: 'Edit Product',
-              presentation: 'modal',
-            }}
-          />
-          <Stack.Screen
-            name="orders/[id]"
-            options={{
-              title: 'Order Details',
-              presentation: 'card',
-            }}
-          />
-          <Stack.Screen
-            name="profile/edit"
-            options={{
-              title: 'Edit Profile',
-              presentation: 'modal',
-            }}
-          />
-          <Stack.Screen
-            name="profile/business"
-            options={{
-              title: 'Business Information',
-              presentation: 'card',
-            }}
-          />
-          <Stack.Screen
-            name="profile/settings"
-            options={{
-              title: 'Settings & Preferences',
-              presentation: 'card',
-            }}
-          />
-        </Stack>
+        <AppNavigation />
       </AppProvider>
     </SafeAreaProvider>
   );

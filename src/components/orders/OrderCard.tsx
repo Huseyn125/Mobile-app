@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../constants/theme';
-import { Order } from '../../types';
+import { Order, OrderStatus } from '../../types';
 import { formatCurrency, formatDate } from '../../utils/analytics';
 
 export interface OrderCardProps {
@@ -13,7 +14,25 @@ export interface OrderCardProps {
 }
 
 export const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
+  const { t } = useTranslation();
   const itemCount = order.items.reduce((acc, item) => acc + item.quantity, 0);
+
+  const getStatusLabel = (status: OrderStatus) => {
+    switch (status) {
+      case 'Pending':
+        return t('orders.statusPending');
+      case 'Confirmed':
+        return t('orders.statusConfirmed');
+      case 'Processing':
+        return t('orders.statusProcessing');
+      case 'Completed':
+        return t('orders.statusCompleted');
+      case 'Cancelled':
+        return t('orders.statusCancelled');
+      default:
+        return status;
+    }
+  };
 
   return (
     <Card onPress={onPress} variant="outlined" style={styles.card}>
@@ -23,7 +42,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
           <Text style={styles.dot}>•</Text>
           <Text style={styles.customerName}>{order.customerName}</Text>
         </View>
-        <Badge label={order.status} status={order.status} />
+        <Badge label={getStatusLabel(order.status)} status={order.status} />
       </View>
 
       <View style={styles.itemsSummary}>
@@ -37,7 +56,9 @@ export const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
           <Feather name="calendar" size={13} color={COLORS.textMuted} style={styles.metaIcon} />
           <Text style={styles.dateText}>{formatDate(order.createdAt)}</Text>
           <Text style={styles.dot}>•</Text>
-          <Text style={styles.itemCountText}>{itemCount} {itemCount === 1 ? 'item' : 'items'}</Text>
+          <Text style={styles.itemCountText}>
+            {t('common.items_many', { count: itemCount })}
+          </Text>
         </View>
 
         <Text style={styles.total}>{formatCurrency(order.total)}</Text>

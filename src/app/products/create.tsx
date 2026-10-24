@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
@@ -16,6 +17,7 @@ import { COLORS, SPACING, TYPOGRAPHY } from '../../constants/theme';
 
 export default function CreateProductScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { addProduct } = useApp();
 
   const [name, setName] = useState('');
@@ -31,13 +33,13 @@ export default function CreateProductScreen() {
   const validate = () => {
     const errs: Record<string, string> = {};
 
-    if (!name.trim()) errs.name = 'Product name is required';
+    if (!name.trim()) errs.name = t('validation.productNameRequired');
     if (!price.trim() || isNaN(Number(price)) || Number(price) <= 0) {
-      errs.price = 'Enter a valid positive price';
+      errs.price = t('validation.validPositivePrice');
     }
-    if (!category.trim()) errs.category = 'Category is required';
+    if (!category.trim()) errs.category = t('validation.categoryRequired');
     if (!stock.trim() || isNaN(Number(stock)) || Number(stock) < 0) {
-      errs.stock = 'Enter a valid stock number';
+      errs.stock = t('validation.validStock');
     }
 
     setErrors(errs);
@@ -51,7 +53,7 @@ export default function CreateProductScreen() {
     setTimeout(() => {
       addProduct({
         name: name.trim(),
-        description: description.trim() || 'No description provided.',
+        description: description.trim() || t('products.noDescription'),
         price: parseFloat(price),
         category: category.trim(),
         stock: parseInt(stock, 10),
@@ -72,10 +74,10 @@ export default function CreateProductScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <Card variant="outlined" style={styles.card}>
-          <Text style={styles.title}>New Product Information</Text>
+          <Text style={styles.title}>{t('products.newProductInfo')}</Text>
 
           <Input
-            label="Product Name *"
+            label={`${t('products.productName')} *`}
             placeholder="e.g. Wireless Ergonomic Mouse"
             value={name}
             onChangeText={(text) => {
@@ -87,8 +89,8 @@ export default function CreateProductScreen() {
           />
 
           <Input
-            label="Description"
-            placeholder="Detailed description of features and specifications..."
+            label={t('products.description')}
+            placeholder={t('products.descriptionPlaceholder')}
             value={description}
             onChangeText={setDescription}
             multiline
@@ -99,8 +101,8 @@ export default function CreateProductScreen() {
           <View style={styles.row}>
             <View style={styles.col}>
               <Input
-                label="Price ($) *"
-                placeholder="29.99"
+                label={`${t('products.price')} *`}
+                placeholder={t('products.pricePlaceholder')}
                 value={price}
                 onChangeText={(text) => {
                   setPrice(text);
@@ -113,8 +115,8 @@ export default function CreateProductScreen() {
             </View>
             <View style={styles.col}>
               <Input
-                label="Stock Quantity *"
-                placeholder="50"
+                label={`${t('products.stock')} *`}
+                placeholder={t('products.stockPlaceholder')}
                 value={stock}
                 onChangeText={(text) => {
                   setStock(text);
@@ -128,8 +130,8 @@ export default function CreateProductScreen() {
           </View>
 
           <Input
-            label="Category *"
-            placeholder="e.g. Electronics, Accessories, Home"
+            label={`${t('products.category')} *`}
+            placeholder={t('products.categoryPlaceholder')}
             value={category}
             onChangeText={(text) => {
               setCategory(text);
@@ -140,24 +142,24 @@ export default function CreateProductScreen() {
           />
 
           <Input
-            label="Image URL (Optional)"
+            label={t('products.imageUrlOptional')}
             placeholder="https://images.unsplash.com/..."
             value={image}
             onChangeText={setImage}
             leftIcon="image"
-            helperText="Leave empty to use default category placeholder"
+            helperText={t('products.imageHelper')}
           />
 
           <View style={styles.buttonRow}>
             <Button
-              title="Cancel"
+              title={t('common.cancel')}
               onPress={() => router.back()}
               variant="outline"
               size="lg"
               style={styles.cancelBtn}
             />
             <Button
-              title="Create Product"
+              title={t('products.addProduct')}
               onPress={handleCreate}
               loading={loading}
               variant="primary"
@@ -178,27 +180,26 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: SPACING.base,
-    paddingBottom: SPACING.xxl,
+    paddingBottom: 60,
   },
   card: {
-    padding: SPACING.base,
+    padding: SPACING.xl,
   },
   title: {
     ...TYPOGRAPHY.h2,
     color: COLORS.textPrimary,
-    marginBottom: SPACING.base,
-  },
-  multilineInput: {
-    height: 70,
-    textAlignVertical: 'top',
+    marginBottom: SPACING.lg,
   },
   row: {
     flexDirection: 'row',
-    marginHorizontal: -SPACING.xs,
+    gap: SPACING.md,
   },
   col: {
     flex: 1,
-    paddingHorizontal: SPACING.xs,
+  },
+  multilineInput: {
+    minHeight: 80,
+    textAlignVertical: 'top',
   },
   buttonRow: {
     flexDirection: 'row',

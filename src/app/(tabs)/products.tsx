@@ -10,6 +10,7 @@ import {
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import { SearchBar } from '../../components/ui/SearchBar';
 import { Button } from '../../components/ui/Button';
@@ -19,6 +20,7 @@ import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../constants/theme';
 
 export default function ProductsScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { products } = useApp();
 
   const [search, setSearch] = useState('');
@@ -45,12 +47,14 @@ export default function ProductsScreen() {
       {/* Top Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Products</Text>
-          <Text style={styles.subtitle}>{products.length} items in inventory</Text>
+          <Text style={styles.title}>{t('products.title')}</Text>
+          <Text style={styles.subtitle}>
+            {t('products.itemsInInventory_many', { count: products.length })}
+          </Text>
         </View>
 
         <Button
-          title="Add"
+          title={t('common.add')}
           leftIcon={<Feather name="plus" size={16} color={COLORS.surface} />}
           onPress={() => router.push('/products/create')}
           size="sm"
@@ -63,7 +67,7 @@ export default function ProductsScreen() {
         <SearchBar
           value={search}
           onChangeText={setSearch}
-          placeholder="Search products by name or category..."
+          placeholder={t('products.searchPlaceholder')}
           onClear={() => setSearch('')}
         />
       </View>
@@ -77,6 +81,7 @@ export default function ProductsScreen() {
         >
           {categories.map((cat) => {
             const isSelected = selectedCategory === cat;
+            const displayName = cat === 'All' ? t('common.all') : cat;
             return (
               <TouchableOpacity
                 key={cat}
@@ -87,7 +92,7 @@ export default function ProductsScreen() {
                 <Text
                   style={[styles.categoryText, isSelected && styles.categoryTextActive]}
                 >
-                  {cat}
+                  {displayName}
                 </Text>
               </TouchableOpacity>
             );
@@ -109,14 +114,14 @@ export default function ProductsScreen() {
         )}
         ListEmptyComponent={
           <EmptyState
-            title="No Products Found"
+            title={t('products.noProductsFound')}
             description={
               search
-                ? `No products match "${search}". Try adjusting your filters.`
-                : 'Your inventory is empty. Add your first product to get started.'
+                ? t('products.noProductsMatch', { query: search })
+                : t('products.emptyInventory')
             }
             icon="package"
-            actionTitle="Add Product"
+            actionTitle={t('products.addProduct')}
             onAction={() => router.push('/products/create')}
           />
         }
@@ -149,7 +154,6 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     paddingHorizontal: SPACING.base,
-    marginTop: SPACING.xs,
     marginBottom: SPACING.sm,
   },
   categoryWrapper: {
@@ -157,30 +161,31 @@ const styles = StyleSheet.create({
   },
   categoryScroll: {
     paddingHorizontal: SPACING.base,
+    gap: SPACING.xs,
   },
   categoryPill: {
     paddingHorizontal: SPACING.md,
-    paddingVertical: 6,
+    paddingVertical: SPACING.xs + 2,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
-    marginRight: SPACING.sm,
   },
   categoryPillActive: {
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
   },
   categoryText: {
-    ...TYPOGRAPHY.captionMedium,
+    ...TYPOGRAPHY.bodySmallMedium,
     color: COLORS.textSecondary,
   },
   categoryTextActive: {
     color: COLORS.surface,
+    fontWeight: '600',
   },
   listContainer: {
     paddingHorizontal: SPACING.base,
-    paddingBottom: SPACING.xxl,
-    flexGrow: 1,
+    paddingBottom: 110,
+    gap: SPACING.xs,
   },
 });

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
@@ -18,6 +19,7 @@ import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../constants/theme';
 
 export default function BusinessInformationScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { user, updateProfile } = useApp();
 
   const [businessName, setBusinessName] = useState(user.businessName);
@@ -30,10 +32,10 @@ export default function BusinessInformationScreen() {
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (!businessName.trim()) errs.businessName = 'Business name is required';
-    if (!category.trim()) errs.category = 'Category is required';
+    if (!businessName.trim()) errs.businessName = t('validation.businessNameRequired');
+    if (!category.trim()) errs.category = t('validation.categoryRequired');
     if (!supportEmail.trim() || !/\S+@\S+\.\S+/.test(supportEmail)) {
-      errs.supportEmail = 'Valid support email is required';
+      errs.supportEmail = t('validation.supportEmailRequired');
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -50,9 +52,9 @@ export default function BusinessInformationScreen() {
       });
       setLoading(false);
       Alert.alert(
-        'Business Info Saved',
-        'Your commercial business information has been successfully updated.',
-        [{ text: 'OK', onPress: () => router.back() }]
+        t('profile.businessInfoSavedTitle'),
+        t('profile.businessInfoSavedMessage'),
+        [{ text: t('common.ok'), onPress: () => router.back() }]
       );
     }, 400);
   };
@@ -71,15 +73,15 @@ export default function BusinessInformationScreen() {
             <View style={styles.iconCircle}>
               <Feather name="briefcase" size={24} color={COLORS.primary} />
             </View>
-            <Text style={styles.headerTitle}>Merchant Information</Text>
+            <Text style={styles.headerTitle}>{t('profile.merchantInfoTitle')}</Text>
             <Text style={styles.headerSubtitle}>
-              Configure your store credentials and official business details
+              {t('profile.merchantInfoSubtitle')}
             </Text>
           </View>
 
           <Input
-            label="Business Name *"
-            placeholder="e.g. Nova Store"
+            label={`${t('auth.businessName')} *`}
+            placeholder={t('auth.businessNamePlaceholder')}
             value={businessName}
             onChangeText={(text) => {
               setBusinessName(text);
@@ -90,8 +92,8 @@ export default function BusinessInformationScreen() {
           />
 
           <Input
-            label="Business Category *"
-            placeholder="e.g. Retail & Electronics"
+            label={`${t('auth.businessCategory')} *`}
+            placeholder={t('auth.categoryPlaceholder')}
             value={category}
             onChangeText={(text) => {
               setCategory(text);
@@ -102,23 +104,23 @@ export default function BusinessInformationScreen() {
           />
 
           <Input
-            label="Store Tax / Registration ID"
-            placeholder="e.g. TX-12345"
+            label={t('profile.storeTaxId')}
+            placeholder={t('profile.storeTaxIdPlaceholder')}
             value={storeTaxId}
             onChangeText={setStoreTaxId}
             leftIcon="file-text"
           />
 
           <Input
-            label="Store Currency"
+            label={t('profile.storeCurrency')}
             value={currency}
             editable={false}
-            helperText="Default operational currency for catalog and orders"
+            helperText={t('profile.storeCurrencyHelper')}
             leftIcon="dollar-sign"
           />
 
           <Input
-            label="Customer Support Email *"
+            label={`${t('profile.customerSupportEmail')} *`}
             placeholder="support@company.com"
             value={supportEmail}
             onChangeText={(text) => {
@@ -133,14 +135,14 @@ export default function BusinessInformationScreen() {
 
           <View style={styles.buttonRow}>
             <Button
-              title="Cancel"
+              title={t('common.cancel')}
               onPress={() => router.back()}
               variant="outline"
               size="lg"
               style={styles.cancelBtn}
             />
             <Button
-              title="Save Details"
+              title={t('common.saveChanges')}
               onPress={handleSave}
               loading={loading}
               variant="primary"
@@ -173,22 +175,22 @@ const styles = StyleSheet.create({
   iconCircle: {
     width: 56,
     height: 56,
-    borderRadius: RADIUS.lg,
+    borderRadius: 28,
     backgroundColor: COLORS.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.md,
   },
   headerTitle: {
     ...TYPOGRAPHY.h2,
-    fontSize: 20,
     color: COLORS.textPrimary,
+    marginBottom: 4,
+    textAlign: 'center',
   },
   headerSubtitle: {
     ...TYPOGRAPHY.caption,
     color: COLORS.textSecondary,
     textAlign: 'center',
-    marginTop: 2,
     maxWidth: 260,
   },
   buttonRow: {

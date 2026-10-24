@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -19,6 +20,7 @@ import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../constants/theme';
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { products, deleteProduct } = useApp();
 
   const product = products.find((p) => p.id === id);
@@ -27,10 +29,10 @@ export default function ProductDetailsScreen() {
     return (
       <View style={styles.notFoundContainer}>
         <EmptyState
-          title="Product Not Found"
-          description="The product you are looking for does not exist or has been removed."
+          title={t('products.productNotFound')}
+          description={t('products.productNotFoundDesc')}
           icon="alert-circle"
-          actionTitle="Back to Products"
+          actionTitle={t('products.backToProducts')}
           onAction={() => router.back()}
         />
       </View>
@@ -39,12 +41,12 @@ export default function ProductDetailsScreen() {
 
   const handleDelete = () => {
     Alert.alert(
-      'Delete Product',
-      `Are you sure you want to delete "${product.name}"? This action cannot be undone.`,
+      t('products.deleteConfirmTitle'),
+      t('products.deleteConfirmMessage', { name: product.name }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: () => {
             deleteProduct(product.id);
@@ -83,30 +85,32 @@ export default function ProductDetailsScreen() {
         <Text style={styles.name}>{product.name}</Text>
         <Text style={styles.price}>{formatCurrency(product.price)}</Text>
 
-        <Text style={styles.sectionHeading}>Description</Text>
+        <Text style={styles.sectionHeading}>{t('products.description')}</Text>
         <Text style={styles.description}>{product.description}</Text>
 
         {/* Stats Grid */}
         <View style={styles.statsGrid}>
           <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Available Stock</Text>
+            <Text style={styles.statLabel}>{t('products.availableStock')}</Text>
             <Text style={[styles.statValue, product.stock < 30 ? styles.stockLow : undefined]}>
-              {product.stock} units
+              {t('products.stockUnits_many', { count: product.stock })}
             </Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Total Sales</Text>
-            <Text style={styles.statValue}>{product.totalSales} items</Text>
+            <Text style={styles.statLabel}>{t('products.totalSales')}</Text>
+            <Text style={styles.statValue}>
+              {t('products.salesCount_many', { count: product.totalSales })}
+            </Text>
           </View>
         </View>
 
         <View style={styles.statsGrid}>
           <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Total Revenue</Text>
+            <Text style={styles.statLabel}>{t('products.totalRevenue')}</Text>
             <Text style={styles.statValue}>{formatCurrency(product.totalRevenue)}</Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={styles.statLabel}>Date Added</Text>
+            <Text style={styles.statLabel}>{t('products.dateAdded')}</Text>
             <Text style={styles.statValue}>{formatDate(product.createdAt)}</Text>
           </View>
         </View>
@@ -115,7 +119,7 @@ export default function ProductDetailsScreen() {
       {/* Action Buttons */}
       <View style={styles.actionsContainer}>
         <Button
-          title="Edit Product"
+          title={t('products.editProduct')}
           leftIcon={<Feather name="edit-2" size={16} color={COLORS.surface} />}
           onPress={() => router.push({ pathname: '/products/edit/[id]', params: { id: product.id } })}
           variant="primary"
@@ -124,7 +128,7 @@ export default function ProductDetailsScreen() {
         />
 
         <Button
-          title="Delete Product"
+          title={t('products.deleteProduct')}
           leftIcon={<Feather name="trash-2" size={16} color={COLORS.danger} />}
           onPress={handleDelete}
           variant="outline"
@@ -171,56 +175,54 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.base,
   },
   categoryBadge: {
-    backgroundColor: COLORS.primaryLight,
-    paddingHorizontal: SPACING.sm + 2,
-    paddingVertical: 3,
-    borderRadius: RADIUS.full,
     alignSelf: 'flex-start',
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 4,
+    borderRadius: RADIUS.full,
     marginBottom: SPACING.sm,
   },
   categoryText: {
-    ...TYPOGRAPHY.badge,
+    ...TYPOGRAPHY.captionMedium,
     color: COLORS.primary,
   },
   name: {
-    ...TYPOGRAPHY.hero,
-    fontSize: 22,
+    ...TYPOGRAPHY.h1,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   price: {
-    ...TYPOGRAPHY.hero,
-    fontSize: 24,
+    ...TYPOGRAPHY.h2,
     color: COLORS.primary,
-    marginBottom: SPACING.base,
+    marginBottom: SPACING.lg,
   },
   sectionHeading: {
-    ...TYPOGRAPHY.h3,
-    fontSize: 15,
-    color: COLORS.textPrimary,
+    ...TYPOGRAPHY.captionMedium,
+    color: COLORS.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
     marginBottom: SPACING.xs,
   },
   description: {
     ...TYPOGRAPHY.body,
     color: COLORS.textSecondary,
-    marginBottom: SPACING.base,
     lineHeight: 22,
+    marginBottom: SPACING.lg,
   },
   statsGrid: {
     flexDirection: 'row',
-    marginHorizontal: -SPACING.xs,
-    marginBottom: SPACING.sm,
+    gap: SPACING.md,
+    marginBottom: SPACING.md,
   },
   statBox: {
     flex: 1,
     backgroundColor: COLORS.surfaceSubtle,
     padding: SPACING.md,
     borderRadius: RADIUS.md,
-    marginHorizontal: SPACING.xs,
   },
   statLabel: {
     ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
+    color: COLORS.textMuted,
     marginBottom: 4,
   },
   statValue: {
@@ -238,7 +240,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   deleteBtn: {
-    borderColor: COLORS.danger,
-    backgroundColor: COLORS.surface,
+    borderColor: '#FEE2E2',
+    backgroundColor: '#FEF2F2',
   },
 });

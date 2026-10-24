@@ -10,30 +10,39 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../constants/theme';
+import { changeLanguage, SUPPORTED_LANGUAGES, SupportedLanguage } from '../../i18n';
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { t, i18n } = useTranslation();
 
   const [pushNotifications, setPushNotifications] = useState(true);
   const [orderAlerts, setOrderAlerts] = useState(true);
   const [lowStockAlerts, setLowStockAlerts] = useState(true);
   const [analyticsInterval, setAnalyticsInterval] = useState<'7D' | '30D' | '3M'>('30D');
 
+  const currentLang = (i18n.language || 'ru') as SupportedLanguage;
+
+  const handleLanguageChange = async (lang: SupportedLanguage) => {
+    await changeLanguage(lang);
+  };
+
   const handleExportData = () => {
     Alert.alert(
-      'Export Store Data',
-      'Generate a comprehensive CSV export containing products, transactions, and performance metrics?',
+      t('settings.exportTitle'),
+      t('settings.exportMessage'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Generate CSV',
+          text: t('settings.generateCsv'),
           onPress: () => {
             Alert.alert(
-              'Export Completed',
-              'Report "nova-store-analytics-2026.csv" has been queued for download.'
+              t('settings.exportCompletedTitle'),
+              t('settings.exportCompletedMessage')
             );
           },
         },
@@ -43,15 +52,15 @@ export default function SettingsScreen() {
 
   const handleClearCache = () => {
     Alert.alert(
-      'Clear Local Cache',
-      'Purge cached images, temporary tokens, and offline computation files?',
+      t('settings.clearCacheTitle'),
+      t('settings.clearCacheMessage'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Clear Cache',
+          text: t('settings.clearCache'),
           style: 'destructive',
           onPress: () => {
-            Alert.alert('Cache Cleared', 'Local client cache freed successfully.');
+            Alert.alert(t('settings.cacheClearedTitle'), t('settings.cacheClearedMessage'));
           },
         },
       ]
@@ -63,14 +72,46 @@ export default function SettingsScreen() {
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
     >
+      {/* Language Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionLabel}>{t('settings.language')}</Text>
+        <Card variant="outlined" style={styles.card}>
+          <View style={styles.langHeader}>
+            <Text style={styles.toggleTitle}>{t('settings.language')}</Text>
+            <Text style={styles.toggleSubtitle}>{t('settings.languageSubtitle')}</Text>
+          </View>
+          <View style={styles.langRow}>
+            {SUPPORTED_LANGUAGES.map((item) => {
+              const active = currentLang.startsWith(item.code);
+              return (
+                <TouchableOpacity
+                  key={item.code}
+                  style={[styles.langBtn, active && styles.langBtnActive]}
+                  onPress={() => handleLanguageChange(item.code)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.langFlag}>{item.flag}</Text>
+                  <Text style={[styles.langText, active && styles.langTextActive]}>
+                    {item.nativeName}
+                  </Text>
+                  {active && (
+                    <Feather name="check" size={16} color={COLORS.surface} style={styles.checkIcon} />
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </Card>
+      </View>
+
       {/* Notifications Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionLabel}>Notifications & Alerts</Text>
+        <Text style={styles.sectionLabel}>{t('settings.notificationsAlerts')}</Text>
         <Card variant="outlined" style={styles.card}>
           <View style={styles.toggleRow}>
             <View style={styles.toggleInfo}>
-              <Text style={styles.toggleTitle}>Push Notifications</Text>
-              <Text style={styles.toggleSubtitle}>Receive daily digest and operational updates</Text>
+              <Text style={styles.toggleTitle}>{t('settings.pushNotifications')}</Text>
+              <Text style={styles.toggleSubtitle}>{t('settings.pushNotificationsDesc')}</Text>
             </View>
             <Switch
               value={pushNotifications}
@@ -84,8 +125,8 @@ export default function SettingsScreen() {
 
           <View style={styles.toggleRow}>
             <View style={styles.toggleInfo}>
-              <Text style={styles.toggleTitle}>Realtime Order Alerts</Text>
-              <Text style={styles.toggleSubtitle}>Notify instantly when a customer submits an order</Text>
+              <Text style={styles.toggleTitle}>{t('settings.orderAlerts')}</Text>
+              <Text style={styles.toggleSubtitle}>{t('settings.orderAlertsDesc')}</Text>
             </View>
             <Switch
               value={orderAlerts}
@@ -99,8 +140,8 @@ export default function SettingsScreen() {
 
           <View style={styles.toggleRow}>
             <View style={styles.toggleInfo}>
-              <Text style={styles.toggleTitle}>Low Stock Warning</Text>
-              <Text style={styles.toggleSubtitle}>Alert when inventory drops below 30 units</Text>
+              <Text style={styles.toggleTitle}>{t('settings.lowStockWarning')}</Text>
+              <Text style={styles.toggleSubtitle}>{t('settings.lowStockWarningDesc')}</Text>
             </View>
             <Switch
               value={lowStockAlerts}
@@ -114,34 +155,35 @@ export default function SettingsScreen() {
 
       {/* Analytics Preferences */}
       <View style={styles.section}>
-        <Text style={styles.sectionLabel}>Analytics Preferences</Text>
+        <Text style={styles.sectionLabel}>{t('settings.analyticsPreferences')}</Text>
         <Card variant="outlined" style={styles.card}>
-          <Text style={styles.prefTitle}>Default Reporting Window</Text>
-          <Text style={styles.prefSubtitle}>Initial time frame applied to Dashboard KPI cards</Text>
-
-          <View style={styles.intervalRow}>
-            {(['7D', '30D', '3M'] as const).map((int) => {
-              const active = analyticsInterval === int;
-              return (
-                <TouchableOpacity
-                  key={int}
-                  style={[styles.intervalBtn, active && styles.intervalBtnActive]}
-                  onPress={() => setAnalyticsInterval(int)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={[styles.intervalBtnText, active && styles.intervalBtnTextActive]}>
-                    {int}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+          <View style={{ padding: SPACING.base }}>
+            <Text style={styles.toggleTitle}>{t('settings.defaultReportingWindow')}</Text>
+            <Text style={styles.toggleSubtitle}>{t('settings.defaultReportingWindowDesc')}</Text>
+            <View style={styles.intervalRow}>
+              {(['7D', '30D', '3M'] as const).map((int) => {
+                const active = analyticsInterval === int;
+                return (
+                  <TouchableOpacity
+                    key={int}
+                    style={[styles.intervalBtn, active && styles.intervalBtnActive]}
+                    onPress={() => setAnalyticsInterval(int)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[styles.intervalBtnText, active && styles.intervalBtnTextActive]}>
+                      {int}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
         </Card>
       </View>
 
       {/* Data & Storage Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionLabel}>Data & Storage</Text>
+        <Text style={styles.sectionLabel}>{t('settings.dataStorage')}</Text>
         <Card variant="outlined" style={styles.card}>
           <TouchableOpacity
             style={styles.actionRow}
@@ -153,8 +195,8 @@ export default function SettingsScreen() {
                 <Feather name="download" size={18} color={COLORS.primary} />
               </View>
               <View>
-                <Text style={styles.actionTitle}>Export Merchant Data</Text>
-                <Text style={styles.actionSubtitle}>Download CSV tables of orders and products</Text>
+                <Text style={styles.actionTitle}>{t('settings.exportMerchantData')}</Text>
+                <Text style={styles.actionSubtitle}>{t('settings.exportMerchantDataDesc')}</Text>
               </View>
             </View>
             <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
@@ -172,8 +214,8 @@ export default function SettingsScreen() {
                 <Feather name="trash-2" size={18} color={COLORS.danger} />
               </View>
               <View>
-                <Text style={[styles.actionTitle, { color: COLORS.danger }]}>Clear Cache</Text>
-                <Text style={styles.actionSubtitle}>Free temporary memory and image buffers</Text>
+                <Text style={[styles.actionTitle, { color: COLORS.danger }]}>{t('settings.clearCache')}</Text>
+                <Text style={styles.actionSubtitle}>{t('settings.clearCacheDesc')}</Text>
               </View>
             </View>
             <Feather name="chevron-right" size={18} color={COLORS.textMuted} />
@@ -182,7 +224,7 @@ export default function SettingsScreen() {
       </View>
 
       <Button
-        title="Done"
+        title={t('common.done')}
         onPress={() => router.back()}
         variant="primary"
         size="lg"
@@ -213,6 +255,45 @@ const styles = StyleSheet.create({
     padding: 0,
     overflow: 'hidden',
   },
+  langHeader: {
+    paddingHorizontal: SPACING.base,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.xs,
+  },
+  langRow: {
+    padding: SPACING.base,
+    gap: SPACING.xs,
+  },
+  langBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.surfaceSubtle,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  langBtnActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
+  },
+  langFlag: {
+    fontSize: 20,
+    marginRight: SPACING.sm,
+  },
+  langText: {
+    ...TYPOGRAPHY.bodyMedium,
+    color: COLORS.textPrimary,
+    flex: 1,
+  },
+  langTextActive: {
+    color: COLORS.surface,
+    fontWeight: '600',
+  },
+  checkIcon: {
+    marginLeft: SPACING.xs,
+  },
   toggleRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -238,46 +319,32 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.border,
     marginLeft: SPACING.base,
   },
-  prefTitle: {
-    ...TYPOGRAPHY.bodyMedium,
-    color: COLORS.textPrimary,
-    paddingTop: SPACING.base,
-    paddingHorizontal: SPACING.base,
-  },
-  prefSubtitle: {
-    ...TYPOGRAPHY.caption,
-    color: COLORS.textSecondary,
-    paddingHorizontal: SPACING.base,
-    marginTop: 2,
-    marginBottom: SPACING.md,
-  },
   intervalRow: {
     flexDirection: 'row',
-    gap: SPACING.sm,
-    paddingHorizontal: SPACING.base,
-    paddingBottom: SPACING.base,
+    gap: SPACING.xs,
+    marginTop: SPACING.sm,
   },
   intervalBtn: {
     flex: 1,
-    paddingVertical: 10,
-    borderRadius: RADIUS.md,
-    backgroundColor: COLORS.surfaceSubtle,
+    paddingVertical: SPACING.xs + 2,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: 'transparent',
+    borderRadius: RADIUS.md,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.surface,
   },
   intervalBtnActive: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
   },
   intervalBtnText: {
-    ...TYPOGRAPHY.captionMedium,
+    ...TYPOGRAPHY.bodySmallMedium,
     color: COLORS.textSecondary,
   },
   intervalBtnTextActive: {
-    color: COLORS.primaryDark,
-    fontWeight: '700',
+    color: COLORS.surface,
+    fontWeight: '600',
   },
   actionRow: {
     flexDirection: 'row',
@@ -289,19 +356,19 @@ const styles = StyleSheet.create({
   actionLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: SPACING.md,
     flex: 1,
   },
   actionIconBox: {
     width: 36,
     height: 36,
     borderRadius: RADIUS.md,
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.surfaceSubtle,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: SPACING.md,
   },
   dangerIconBox: {
-    backgroundColor: COLORS.dangerLight,
+    backgroundColor: '#FEE2E2',
   },
   actionTitle: {
     ...TYPOGRAPHY.bodyMedium,
@@ -310,9 +377,9 @@ const styles = StyleSheet.create({
   actionSubtitle: {
     ...TYPOGRAPHY.caption,
     color: COLORS.textSecondary,
-    marginTop: 2,
+    marginTop: 1,
   },
   doneBtn: {
-    marginTop: SPACING.xs,
+    marginTop: SPACING.sm,
   },
 });

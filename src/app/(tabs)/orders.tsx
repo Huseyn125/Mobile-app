@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import { SearchBar } from '../../components/ui/SearchBar';
 import { OrderCard } from '../../components/orders/OrderCard';
@@ -27,10 +28,28 @@ const STATUS_FILTERS: Array<'All' | OrderStatus> = [
 
 export default function OrdersScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { orders } = useApp();
 
   const [search, setSearch] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<'All' | OrderStatus>('All');
+
+  const getStatusLabel = (status: 'All' | OrderStatus) => {
+    switch (status) {
+      case 'All':
+        return t('orders.all');
+      case 'Pending':
+        return t('orders.statusPending');
+      case 'Confirmed':
+        return t('orders.statusConfirmed');
+      case 'Processing':
+        return t('orders.statusProcessing');
+      case 'Completed':
+        return t('orders.statusCompleted');
+      case 'Cancelled':
+        return t('orders.statusCancelled');
+    }
+  };
 
   const filteredOrders = useMemo(() => {
     return orders.filter((ord) => {
@@ -49,8 +68,10 @@ export default function OrdersScreen() {
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Orders</Text>
-        <Text style={styles.subtitle}>{orders.length} total orders recorded</Text>
+        <Text style={styles.title}>{t('orders.title')}</Text>
+        <Text style={styles.subtitle}>
+          {t('orders.totalOrdersRecorded_many', { count: orders.length })}
+        </Text>
       </View>
 
       {/* Search */}
@@ -58,7 +79,7 @@ export default function OrdersScreen() {
         <SearchBar
           value={search}
           onChangeText={setSearch}
-          placeholder="Search by order ID or customer name..."
+          placeholder={t('orders.searchPlaceholder')}
           onClear={() => setSearch('')}
         />
       </View>
@@ -82,7 +103,7 @@ export default function OrdersScreen() {
                 <Text
                   style={[styles.statusText, isSelected && styles.statusTextActive]}
                 >
-                  {status}
+                  {getStatusLabel(status)}
                 </Text>
               </TouchableOpacity>
             );
@@ -104,11 +125,11 @@ export default function OrdersScreen() {
         )}
         ListEmptyComponent={
           <EmptyState
-            title="No Orders Found"
+            title={t('orders.noOrdersFound')}
             description={
               search
-                ? `No orders matching "${search}" were found.`
-                : 'There are no orders for this filter selection.'
+                ? t('orders.noOrdersMatch', { query: search })
+                : t('orders.noOrdersFilter')
             }
             icon="shopping-bag"
           />
@@ -139,7 +160,6 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     paddingHorizontal: SPACING.base,
-    marginTop: SPACING.xs,
     marginBottom: SPACING.sm,
   },
   filterWrapper: {
@@ -147,30 +167,31 @@ const styles = StyleSheet.create({
   },
   filterScroll: {
     paddingHorizontal: SPACING.base,
+    gap: SPACING.xs,
   },
   statusPill: {
     paddingHorizontal: SPACING.md,
-    paddingVertical: 6,
+    paddingVertical: SPACING.xs + 2,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.surface,
     borderWidth: 1,
     borderColor: COLORS.border,
-    marginRight: SPACING.sm,
   },
   statusPillActive: {
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
   },
   statusText: {
-    ...TYPOGRAPHY.captionMedium,
+    ...TYPOGRAPHY.bodySmallMedium,
     color: COLORS.textSecondary,
   },
   statusTextActive: {
     color: COLORS.surface,
+    fontWeight: '600',
   },
   listContainer: {
     paddingHorizontal: SPACING.base,
-    paddingBottom: SPACING.xxl,
-    flexGrow: 1,
+    paddingBottom: 110,
+    gap: SPACING.xs,
   },
 });

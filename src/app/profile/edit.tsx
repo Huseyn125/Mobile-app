@@ -9,6 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
@@ -18,6 +19,7 @@ import { COLORS, SPACING, TYPOGRAPHY } from '../../constants/theme';
 
 export default function EditProfileScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { user, updateProfile } = useApp();
 
   const [name, setName] = useState(user.name);
@@ -28,11 +30,11 @@ export default function EditProfileScreen() {
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (!name.trim()) errs.name = 'Full name is required';
+    if (!name.trim()) errs.name = t('validation.fullNameRequired');
     if (!email.trim()) {
-      errs.email = 'Email address is required';
+      errs.email = t('validation.emailRequired');
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errs.email = 'Enter a valid email address';
+      errs.email = t('validation.validEmail');
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -49,8 +51,8 @@ export default function EditProfileScreen() {
         avatarUrl: avatarUrl.trim() || undefined,
       });
       setLoading(false);
-      Alert.alert('Profile Updated', 'Your profile details have been saved successfully.', [
-        { text: 'OK', onPress: () => router.back() },
+      Alert.alert(t('profile.profileUpdatedTitle'), t('profile.profileUpdatedMessage'), [
+        { text: t('common.ok'), onPress: () => router.back() },
       ]);
     }, 400);
   };
@@ -71,12 +73,12 @@ export default function EditProfileScreen() {
               name={name || 'User'}
               size={72}
             />
-            <Text style={styles.avatarHint}>Live avatar preview</Text>
+            <Text style={styles.avatarHint}>{t('profile.liveAvatarPreview')}</Text>
           </View>
 
           <Input
-            label="Full Name *"
-            placeholder="e.g. Huseyn Hasanzade"
+            label={`${t('auth.fullName')} *`}
+            placeholder={t('auth.fullNamePlaceholder')}
             value={name}
             onChangeText={(text) => {
               setName(text);
@@ -87,8 +89,8 @@ export default function EditProfileScreen() {
           />
 
           <Input
-            label="Email Address *"
-            placeholder="owner@company.com"
+            label={`${t('auth.email')} *`}
+            placeholder={t('auth.emailPlaceholder')}
             value={email}
             onChangeText={(text) => {
               setEmail(text);
@@ -101,24 +103,24 @@ export default function EditProfileScreen() {
           />
 
           <Input
-            label="Avatar Image URL (Optional)"
+            label={t('profile.avatarUrlOptional')}
             placeholder="https://images.unsplash.com/..."
             value={avatarUrl}
             onChangeText={setAvatarUrl}
-            helperText="Enter a direct image link or leave empty for initials"
+            helperText={t('profile.avatarUrlHelper')}
             leftIcon="image"
           />
 
           <View style={styles.buttonRow}>
             <Button
-              title="Cancel"
+              title={t('common.cancel')}
               onPress={() => router.back()}
               variant="outline"
               size="lg"
               style={styles.cancelBtn}
             />
             <Button
-              title="Save Changes"
+              title={t('common.saveChanges')}
               onPress={handleSave}
               loading={loading}
               variant="primary"

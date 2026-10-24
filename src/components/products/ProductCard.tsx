@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Card } from '../ui/Card';
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../constants/theme';
 import { Product } from '../../types';
@@ -16,6 +17,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onPress,
   variant = 'list',
 }) => {
+  const { t } = useTranslation();
   const isCompact = variant === 'compact';
 
   return (
@@ -42,10 +44,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         <View style={styles.footerRow}>
           <Text style={[styles.stock, product.stock < 30 ? styles.stockLow : undefined]}>
-            Stock: {product.stock}
+            {t('products.stockSummary', { stock: product.stock })}
           </Text>
           <Text style={styles.sales}>
-            {product.totalSales} sales ({formatCurrency(product.totalRevenue)})
+            {t('products.salesSummary', {
+              sales: product.totalSales,
+              revenue: formatCurrency(product.totalRevenue),
+            })}
           </Text>
         </View>
       </View>

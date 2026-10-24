@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     padding: SPACING.base,
   },
   primaryCard: {
-    backgroundColor: COLORS.primaryDark,
+    backgroundColor: COLORS.primary,
     borderColor: 'transparent',
   },
   headerRow: {

@@ -1,64 +1,42 @@
 import React from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import { COLORS, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from '../../constants/theme';
-
-export interface TabBarProps {
-  state: {
-    index: number;
-    routes: Array<{ key: string; name: string; params?: object }>;
-  };
-  descriptors: Record<string, { options: { title?: string; tabBarAccessibilityLabel?: string } }>;
-  navigation: {
-    emit: (event: { type: string; target: string; canPreventDefault?: boolean }) => { defaultPrevented: boolean };
-    navigate: (name: string, params?: object) => void;
-  };
-}
+import { COLORS, RADIUS, SHADOWS, SPACING } from '../../constants/theme';
 
 interface TabConfig {
-  label: string;
   icon: keyof typeof Feather.glyphMap;
 }
 
 const TAB_CONFIG: Record<string, TabConfig> = {
-  index: { label: 'Home', icon: 'home' },
-  products: { label: 'Products', icon: 'package' },
-  orders: { label: 'Orders', icon: 'shopping-bag' },
-  analytics: { label: 'Analytics', icon: 'bar-chart-2' },
-  profile: { label: 'Profile', icon: 'user' },
+  index: { icon: 'home' },
+  analytics: { icon: 'bar-chart-2' },
+  products: { icon: 'package' },
+  orders: { icon: 'shopping-bag' },
+  profile: { icon: 'settings' },
 };
 
 export const FloatingCapsuleTabBar: React.FC<any> = ({
   state,
   descriptors,
   navigation,
-}: TabBarProps) => {
+}) => {
   const insets = useSafeAreaInsets();
-  const bottomPadding = Math.max(insets.bottom, 12);
+  const bottomPadding = Math.max(insets.bottom, 14);
 
   return (
-    <View
-      style={[
-        styles.outerContainer,
-        { paddingBottom: bottomPadding },
-      ]}
-      pointerEvents="box-none"
-    >
-      <View style={styles.islandContainer}>
-        {state.routes.map((route, index) => {
+    <View style={styles.outerWrapper} pointerEvents="box-none">
+      <View style={[styles.barContainer, { paddingBottom: bottomPadding }]}>
+        {state.routes.map((route: any, index: number) => {
           const { options } = descriptors[route.key];
           const isFocused = state.index === index;
-          const config = TAB_CONFIG[route.name] || {
-            label: (options.title || route.name) as string,
-            icon: 'circle' as keyof typeof Feather.glyphMap,
-          };
+          const config = TAB_CONFIG[route.name] || { icon: 'circle' as keyof typeof Feather.glyphMap };
+          const label = options.title !== undefined ? options.title : route.name;
 
           const onPress = () => {
             const event = navigation.emit({
@@ -84,25 +62,20 @@ export const FloatingCapsuleTabBar: React.FC<any> = ({
               key={route.key}
               accessibilityRole="button"
               accessibilityState={isFocused ? { selected: true } : {}}
-              accessibilityLabel={options.tabBarAccessibilityLabel || config.label}
+              accessibilityLabel={options.tabBarAccessibilityLabel || label}
               onPress={onPress}
               onLongPress={onLongPress}
               activeOpacity={0.7}
-              style={[
-                styles.tabButton,
-                isFocused ? styles.tabButtonActive : styles.tabButtonInactive,
-              ]}
+              style={styles.tabButton}
             >
-              <Feather
-                name={config.icon}
-                size={19}
-                color={isFocused ? '#FFFFFF' : '#0F172A'}
-              />
-              {isFocused && (
-                <Text style={styles.activeLabel} numberOfLines={1}>
-                  {config.label}
-                </Text>
-              )}
+              <View style={[styles.iconWrap, isFocused && styles.iconWrapActive]}>
+                <Feather
+                  name={config.icon}
+                  size={22}
+                  color={isFocused ? COLORS.primary : '#94A3B8'}
+                />
+              </View>
+              {isFocused && <View style={styles.activeDot} />}
             </TouchableOpacity>
           );
         })}
@@ -112,55 +85,43 @@ export const FloatingCapsuleTabBar: React.FC<any> = ({
 };
 
 const styles = StyleSheet.create({
-  outerContainer: {
+  outerWrapper: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    alignItems: 'center',
-    paddingHorizontal: SPACING.base,
-    backgroundColor: 'transparent',
   },
-  islandContainer: {
+  barContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     backgroundColor: '#FFFFFF',
-    borderRadius: RADIUS.full,
-    paddingVertical: 7,
-    paddingHorizontal: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    width: '100%',
-    maxWidth: 420,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+    paddingTop: 12,
     ...SHADOWS.card,
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 8,
   },
   tabButton: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: RADIUS.full,
-    paddingVertical: 9,
+    flex: 1,
+    paddingVertical: 2,
   },
-  tabButtonActive: {
-    backgroundColor: '#18181B', // Dark charcoal/black capsule as shown in reference design
-    paddingHorizontal: 16,
-    flexShrink: 0,
+  iconWrap: {
+    width: 40,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: RADIUS.md,
   },
-  tabButtonInactive: {
-    paddingHorizontal: 12,
-    backgroundColor: 'transparent',
+  iconWrapActive: {
+    backgroundColor: COLORS.primaryLight,
   },
-  activeLabel: {
-    ...TYPOGRAPHY.badge,
-    fontSize: 13,
-    color: '#FFFFFF',
-    fontWeight: '600',
-    marginLeft: 6,
+  activeDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: COLORS.primary,
+    marginTop: 3,
   },
 });

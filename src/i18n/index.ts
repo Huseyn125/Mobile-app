@@ -9,8 +9,8 @@ import { SupportedLanguage, LanguageOption, TranslationSchema } from './types';
 export const LANGUAGE_STORAGE_KEY = 'app_language';
 
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
   { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺' },
+  { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
   { code: 'az', name: 'Azerbaijani', nativeName: 'Azərbaycan dili', flag: '🇦🇿' },
 ];
 
@@ -43,8 +43,8 @@ async function setStoredItem(key: string, value: string): Promise<void> {
 i18n.use(initReactI18next).init({
   compatibilityJSON: 'v4',
   resources,
-  lng: 'en',
-  fallbackLng: 'en',
+  lng: 'ru',
+  fallbackLng: 'ru',
   interpolation: {
     escapeValue: false, // React Native handles XSS escaping
   },
@@ -55,7 +55,7 @@ i18n.use(initReactI18next).init({
 
 /**
  * Loads the saved language preference from storage.
- * Falls back to 'en' if not set or invalid.
+ * Falls back to 'ru' if not set or invalid.
  */
 export async function loadSavedLanguage(): Promise<SupportedLanguage> {
   try {
@@ -66,7 +66,7 @@ export async function loadSavedLanguage(): Promise<SupportedLanguage> {
   } catch (error) {
     console.warn('[i18n] Failed to read saved language:', error);
   }
-  return 'en';
+  return 'ru';
 }
 
 /**

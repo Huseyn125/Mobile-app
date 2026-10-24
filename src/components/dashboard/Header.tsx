@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../constants/theme';
 import { UserProfile } from '../../types';
 
@@ -13,10 +14,22 @@ export interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   user,
-  greeting = 'Good morning',
+  greeting,
   onNotificationPress,
   onAvatarPress,
 }) => {
+  const { t } = useTranslation();
+
+  const currentHour = new Date().getHours();
+  const defaultGreeting =
+    currentHour < 12
+      ? t('dashboard.greetingMorning')
+      : currentHour < 18
+      ? t('dashboard.greetingAfternoon')
+      : t('dashboard.greetingEvening');
+
+  const displayGreeting = greeting || defaultGreeting;
+
   return (
     <View style={styles.container}>
       <View style={styles.leftCol}>
@@ -25,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({
           activeOpacity={0.8}
           style={styles.avatarButton}
           accessibilityRole="button"
-          accessibilityLabel="Open profile"
+          accessibilityLabel={t('dashboard.openProfile')}
         >
           {user.avatarUrl ? (
             <Image source={{ uri: user.avatarUrl }} style={styles.avatar} />
@@ -38,7 +51,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         <View style={styles.textContainer}>
           <Text style={styles.greeting} numberOfLines={1}>
-            {greeting}, {user.name.split(' ')[0]} 👋
+            {displayGreeting}, {user.name.split(' ')[0]} 👋
           </Text>
           <Text style={styles.businessName} numberOfLines={1}>
             {user.businessName}
@@ -51,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
         style={styles.notificationButton}
         activeOpacity={0.7}
         accessibilityRole="button"
-        accessibilityLabel="Notifications"
+        accessibilityLabel={t('dashboard.notifications')}
       >
         <Feather name="bell" size={20} color={COLORS.textPrimary} />
         <View style={styles.notificationDot} />

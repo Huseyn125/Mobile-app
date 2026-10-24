@@ -7,9 +7,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
@@ -18,6 +20,7 @@ import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../constants/theme';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { login } = useApp();
 
   const [email, setEmail] = useState('huseyn@example.com');
@@ -28,15 +31,15 @@ export default function LoginScreen() {
   const validate = () => {
     const errs: { email?: string; password?: string } = {};
     if (!email.trim()) {
-      errs.email = 'Email is required';
+      errs.email = t('validation.emailRequired');
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errs.email = 'Enter a valid email address';
+      errs.email = t('validation.validEmail');
     }
 
     if (!password) {
-      errs.password = 'Password is required';
+      errs.password = t('validation.passwordRequired');
     } else if (password.length < 6) {
-      errs.password = 'Password must be at least 6 characters';
+      errs.password = t('validation.passwordMinLength');
     }
 
     setErrors(errs);
@@ -67,14 +70,14 @@ export default function LoginScreen() {
           <View style={styles.logoBadge}>
             <Feather name="bar-chart-2" size={32} color={COLORS.primary} />
           </View>
-          <Text style={styles.title}>Business Analytics</Text>
-          <Text style={styles.subtitle}>Welcome back! Please enter your details.</Text>
+          <Text style={styles.title}>{t('auth.welcomeTitle')}</Text>
+          <Text style={styles.subtitle}>{t('auth.loginSubtitle')}</Text>
         </View>
 
         <Card variant="outlined" style={styles.card}>
           <Input
-            label="Email Address"
-            placeholder="owner@company.com"
+            label={t('auth.email')}
+            placeholder={t('auth.emailPlaceholder')}
             value={email}
             onChangeText={(text) => {
               setEmail(text);
@@ -87,7 +90,7 @@ export default function LoginScreen() {
           />
 
           <Input
-            label="Password"
+            label={t('auth.password')}
             placeholder="••••••••"
             value={password}
             onChangeText={(text) => {
@@ -102,13 +105,18 @@ export default function LoginScreen() {
           <TouchableOpacity
             style={styles.forgotBtn}
             activeOpacity={0.7}
-            onPress={() => {}}
+            onPress={() => {
+              Alert.alert(
+                t('auth.forgotPassword'),
+                'Функция сброса пароля будет подключена при интеграции почтового сервиса бэкенда.'
+              );
+            }}
           >
-            <Text style={styles.forgotText}>Forgot password?</Text>
+            <Text style={styles.forgotText}>{t('auth.forgotPassword')}</Text>
           </TouchableOpacity>
 
           <Button
-            title="Log In"
+            title={t('auth.loginButton')}
             onPress={handleLogin}
             loading={loading}
             variant="primary"
@@ -117,14 +125,24 @@ export default function LoginScreen() {
           />
 
           <View style={styles.footerRow}>
-            <Text style={styles.footerText}>Don't have an account? </Text>
+            <Text style={styles.footerText}>{t('auth.noAccount')} </Text>
             <TouchableOpacity
               onPress={() => router.push('/(auth)/register')}
               activeOpacity={0.7}
             >
-              <Text style={styles.registerLink}>Create account</Text>
+              <Text style={styles.registerLink}>{t('auth.createAccount')}</Text>
             </TouchableOpacity>
           </View>
+
+          <TouchableOpacity
+            style={styles.onboardingLink}
+            onPress={() => router.push('/onboarding')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.onboardingLinkText}>
+              Просмотреть Onboarding дизайн →
+            </Text>
+          </TouchableOpacity>
         </Card>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -138,8 +156,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: SPACING.xl,
     justifyContent: 'center',
+    padding: SPACING.base,
+    paddingVertical: SPACING.xxl,
   },
   header: {
     alignItems: 'center',
@@ -148,21 +167,19 @@ const styles = StyleSheet.create({
   logoBadge: {
     width: 64,
     height: 64,
-    borderRadius: RADIUS.lg,
+    borderRadius: RADIUS.xl,
     backgroundColor: COLORS.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.base,
   },
   title: {
-    ...TYPOGRAPHY.hero,
-    fontSize: 26,
+    ...TYPOGRAPHY.h1,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
-    textAlign: 'center',
   },
   subtitle: {
-    ...TYPOGRAPHY.body,
+    ...TYPOGRAPHY.bodySmall,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
@@ -179,20 +196,29 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   loginBtn: {
-    marginBottom: SPACING.base,
+    marginBottom: SPACING.lg,
   },
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: SPACING.sm,
   },
   footerText: {
-    ...TYPOGRAPHY.caption,
+    ...TYPOGRAPHY.bodySmall,
     color: COLORS.textSecondary,
   },
   registerLink: {
+    ...TYPOGRAPHY.bodySmallMedium,
+    color: COLORS.primary,
+  },
+  onboardingLink: {
+    marginTop: SPACING.md,
+    alignItems: 'center',
+    paddingVertical: 6,
+  },
+  onboardingLinkText: {
     ...TYPOGRAPHY.captionMedium,
     color: COLORS.primary,
+    fontWeight: '600',
   },
 });

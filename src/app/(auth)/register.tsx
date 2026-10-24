@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card } from '../../components/ui/Card';
@@ -18,6 +19,7 @@ import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '../../constants/theme';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { login } = useApp();
 
   const [fullName, setFullName] = useState('');
@@ -33,20 +35,20 @@ export default function RegisterScreen() {
   const validate = () => {
     const errs: Record<string, string> = {};
 
-    if (!fullName.trim()) errs.fullName = 'Full name is required';
+    if (!fullName.trim()) errs.fullName = t('validation.fullNameRequired');
     if (!email.trim()) {
-      errs.email = 'Email is required';
+      errs.email = t('validation.emailRequired');
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errs.email = 'Enter a valid email address';
+      errs.email = t('validation.validEmail');
     }
-    if (!businessName.trim()) errs.businessName = 'Business name is required';
+    if (!businessName.trim()) errs.businessName = t('validation.businessNameRequired');
     if (!password) {
-      errs.password = 'Password is required';
+      errs.password = t('validation.passwordRequired');
     } else if (password.length < 6) {
-      errs.password = 'Must be at least 6 characters';
+      errs.password = t('validation.passwordMinLength');
     }
     if (password !== confirmPassword) {
-      errs.confirmPassword = 'Passwords do not match';
+      errs.confirmPassword = t('validation.passwordsDoNotMatch');
     }
 
     setErrors(errs);
@@ -79,18 +81,18 @@ export default function RegisterScreen() {
           activeOpacity={0.7}
         >
           <Feather name="arrow-left" size={20} color={COLORS.textPrimary} />
-          <Text style={styles.backText}>Back to login</Text>
+          <Text style={styles.backText}>{t('auth.backToLogin')}</Text>
         </TouchableOpacity>
 
         <View style={styles.header}>
-          <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>Start monitoring your business analytics today.</Text>
+          <Text style={styles.title}>{t('auth.registerTitle')}</Text>
+          <Text style={styles.subtitle}>{t('auth.registerSubtitle')}</Text>
         </View>
 
         <Card variant="outlined" style={styles.card}>
           <Input
-            label="Full Name"
-            placeholder="e.g. Huseyn Hasanzade"
+            label={t('auth.fullName')}
+            placeholder={t('auth.fullNamePlaceholder')}
             value={fullName}
             onChangeText={(text) => {
               setFullName(text);
@@ -101,8 +103,8 @@ export default function RegisterScreen() {
           />
 
           <Input
-            label="Email Address"
-            placeholder="owner@company.com"
+            label={t('auth.email')}
+            placeholder={t('auth.emailPlaceholder')}
             value={email}
             onChangeText={(text) => {
               setEmail(text);
@@ -115,8 +117,8 @@ export default function RegisterScreen() {
           />
 
           <Input
-            label="Business Name"
-            placeholder="e.g. Nova Store"
+            label={t('auth.businessName')}
+            placeholder={t('auth.businessNamePlaceholder')}
             value={businessName}
             onChangeText={(text) => {
               setBusinessName(text);
@@ -127,15 +129,15 @@ export default function RegisterScreen() {
           />
 
           <Input
-            label="Business Category (Optional)"
-            placeholder="e.g. Retail, Electronics, Cafe"
+            label={t('auth.businessCategoryOptional')}
+            placeholder={t('auth.categoryPlaceholder')}
             value={category}
             onChangeText={setCategory}
             leftIcon="tag"
           />
 
           <Input
-            label="Password"
+            label={t('auth.password')}
             placeholder="••••••••"
             value={password}
             onChangeText={(text) => {
@@ -148,7 +150,7 @@ export default function RegisterScreen() {
           />
 
           <Input
-            label="Confirm Password"
+            label={t('auth.confirmPassword')}
             placeholder="••••••••"
             value={confirmPassword}
             onChangeText={(text) => {
@@ -161,7 +163,7 @@ export default function RegisterScreen() {
           />
 
           <Button
-            title="Create Account"
+            title={t('auth.registerButton')}
             onPress={handleRegister}
             loading={loading}
             variant="primary"
@@ -180,36 +182,33 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   scrollContent: {
-    flexGrow: 1,
-    padding: SPACING.xl,
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    padding: SPACING.base,
+    paddingVertical: SPACING.xl,
   },
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: SPACING.xs,
     marginBottom: SPACING.lg,
   },
   backText: {
-    ...TYPOGRAPHY.captionMedium,
+    ...TYPOGRAPHY.bodySmallMedium,
     color: COLORS.textPrimary,
-    marginLeft: SPACING.xs,
   },
   header: {
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.xl,
   },
   title: {
-    ...TYPOGRAPHY.hero,
-    fontSize: 26,
+    ...TYPOGRAPHY.h1,
     color: COLORS.textPrimary,
     marginBottom: SPACING.xs,
   },
   subtitle: {
-    ...TYPOGRAPHY.body,
+    ...TYPOGRAPHY.bodySmall,
     color: COLORS.textSecondary,
   },
   card: {
     padding: SPACING.xl,
-    marginBottom: SPACING.xl,
   },
   registerBtn: {
     marginTop: SPACING.md,

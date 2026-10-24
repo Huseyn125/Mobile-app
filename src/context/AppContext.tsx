@@ -9,6 +9,7 @@ interface AppContextType {
   isAuthenticated: boolean;
   login: (email?: string) => void;
   logout: () => void;
+  updateProfile: (updates: Partial<UserProfile>) => void;
   addProduct: (product: Omit<Product, 'id' | 'createdAt' | 'totalSales' | 'totalRevenue'>) => Product;
   updateProduct: (id: string, updates: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
@@ -21,7 +22,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile>(INITIAL_USER);
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true); // default true for convenient preview, with login flow supported
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
 
   const login = (email?: string) => {
     setIsAuthenticated(true);
@@ -32,6 +33,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     setIsAuthenticated(false);
+  };
+
+  const updateProfile = (updates: Partial<UserProfile>) => {
+    setUser((prev) => ({ ...prev, ...updates }));
   };
 
   const addProduct = (
@@ -73,6 +78,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated,
         login,
         logout,
+        updateProfile,
         addProduct,
         updateProduct,
         deleteProduct,

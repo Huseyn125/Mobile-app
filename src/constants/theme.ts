@@ -1,93 +1,129 @@
-// Material Design 3 color palette — Google Stitch design system
+// Modern Dribbble / Emerald Minimalist Design System
 export const COLORS = {
-  primary: '#0037b0',
-  primaryContainer: '#1d4ed8',
-  onPrimary: '#ffffff',
-  onPrimaryContainer: '#cad3ff',
-  primaryFixed: '#dce1ff',
-  primaryFixedDim: '#b7c4ff',
-  inversePrimary: '#b7c4ff',
-  secondary: '#006c49',
-  secondaryContainer: '#6cf8bb',
-  onSecondary: '#ffffff',
-  onSecondaryContainer: '#00714d',
-  tertiary: '#00496b',
-  tertiaryContainer: '#00628d',
-  onTertiary: '#ffffff',
-  error: '#ba1a1a',
-  errorContainer: '#ffdad6',
-  onError: '#ffffff',
-  onErrorContainer: '#93000a',
-  surface: '#faf8ff',
-  surfaceBright: '#faf8ff',
-  surfaceDim: '#d2d9f4',
-  surfaceContainerLowest: '#ffffff',
-  surfaceContainerLow: '#f2f3ff',
-  surfaceContainer: '#eaedff',
-  surfaceContainerHigh: '#e2e7ff',
-  surfaceContainerHighest: '#dae2fd',
-  onSurface: '#131b2e',
-  onSurfaceVariant: '#434655',
-  inverseSurface: '#283044',
-  inverseOnSurface: '#eef0ff',
-  outline: '#747686',
-  outlineVariant: '#c4c5d7',
-  surfaceTint: '#2151da',
-  background: '#faf8ff',
-  onBackground: '#131b2e',
-  // Legacy aliases
-  primaryDark: '#0037b0',
-  primaryLight: '#dce1ff',
-  surfaceSubtle: '#f2f3ff',
-  info: '#00496b',
-  infoLight: '#c9e6ff',
-  textPrimary: '#131b2e',
-  textSecondary: '#434655',
-  textMuted: '#747686',
-  success: '#006c49',
-  successLight: '#6cf8bb',
+  // Emerald brand palette
+  primary: '#00875A',          // Deep vibrant emerald green
+  primaryDark: '#006644',      // Dark emerald
+  primaryLight: '#E6F7F0',     // Soft mint highlight
+  primaryHover: '#007A51',
+  
+  // Secondary / Accent
+  secondary: '#18181B',        // Deep dark slate / black
+  secondaryLight: '#F4F5F7',
+  accentGreen: '#10B981',      // Bright mint
+  accentYellow: '#F59E0B',     // Warm amber/gold from donut chart
+  accentOrange: '#FB923C',
+  accentSlate: '#94A3B8',      // Grey platform metric
+
+  // Surfaces & Backgrounds
+  background: '#F8FAF9',       // Clean, airy light grey/mint background
+  surface: '#FFFFFF',          // Crisp white card surface
+  surfaceSubtle: '#F1F5F3',    // Light divider / input background
+  surfaceTint: '#E6F7F0',
+
+  // Text
+  textPrimary: '#18181B',      // High contrast dark text
+  textSecondary: '#64748B',    // Slate grey body text
+  textMuted: '#94A3B8',        // Faint caption text
+  textInverse: '#FFFFFF',
+
+  // Status colors
+  success: '#00875A',
+  successLight: '#E6F7F0',
   warning: '#F59E0B',
   warningLight: '#FEF3C7',
-  danger: '#ba1a1a',
-  dangerLight: '#ffdad6',
-  border: '#c4c5d7',
-  borderDark: '#747686',
+  danger: '#EF4444',
+  dangerLight: '#FEE2E2',
+  info: '#0284C7',
+  infoLight: '#E0F2FE',
+
+  // Borders & Dividers
+  border: '#E2E8F0',
+  borderLight: '#F1F5F9',
+  borderDark: '#CBD5E1',
+
+  // Legacy mappings for backwards compatibility
+  onPrimary: '#FFFFFF',
+  onSecondary: '#FFFFFF',
+  surfaceContainer: '#FFFFFF',
+  surfaceContainerLow: '#F8FAF9',
+  surfaceContainerHigh: '#F1F5F3',
+  primaryContainer: '#E6F7F0',
+  outline: '#747686',
+  onSurface: '#18181B',
+  onSurfaceVariant: '#64748B',
 };
 
 export const SPACING = {
-  xs: 4, sm: 8, md: 12, base: 16, lg: 20, xl: 24, xxl: 32,
+  xs: 4,
+  sm: 8,
+  md: 12,
+  base: 16,
+  lg: 20,
+  xl: 24,
+  xxl: 32,
 };
 
 export const RADIUS = {
-  xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32, full: 9999,
+  xs: 6,
+  sm: 10,
+  md: 14,
+  lg: 20,
+  xl: 26,
+  xxl: 32,
+  full: 9999,
 };
 
 export const TYPOGRAPHY = {
-  displayLg: { fontSize: 32, fontWeight: '800' as const, lineHeight: 38, letterSpacing: -0.96 },
-  displayMd: { fontSize: 26, fontWeight: '700' as const, lineHeight: 32, letterSpacing: -0.52 },
-  headlineLg: { fontSize: 20, fontWeight: '700' as const, lineHeight: 26, letterSpacing: -0.3 },
-  headlineMd: { fontSize: 17, fontWeight: '600' as const, lineHeight: 22, letterSpacing: -0.17 },
-  titleSm: { fontSize: 15, fontWeight: '600' as const, lineHeight: 20, letterSpacing: -0.075 },
-  bodyLg: { fontSize: 15, fontWeight: '400' as const, lineHeight: 22 },
-  bodyMd: { fontSize: 13, fontWeight: '400' as const, lineHeight: 18 },
-  labelSm: { fontSize: 11, fontWeight: '500' as const, lineHeight: 14 },
-  labelCaps: { fontSize: 11, fontWeight: '700' as const, lineHeight: 14, letterSpacing: 0.66, textTransform: 'uppercase' as const },
-  metricTrend: { fontSize: 12, fontWeight: '700' as const, lineHeight: 16, letterSpacing: -0.12 },
-  // Legacy
-  hero: { fontSize: 28, fontWeight: '700' as const, lineHeight: 34 },
+  displayLg: { fontSize: 34, fontWeight: '800' as const, lineHeight: 40, letterSpacing: -1 },
+  displayMd: { fontSize: 28, fontWeight: '700' as const, lineHeight: 34, letterSpacing: -0.6 },
+  heroNumber: { fontSize: 38, fontWeight: '800' as const, lineHeight: 44, letterSpacing: -1.2 },
+  headlineLg: { fontSize: 22, fontWeight: '700' as const, lineHeight: 28, letterSpacing: -0.4 },
+  headlineMd: { fontSize: 18, fontWeight: '700' as const, lineHeight: 24, letterSpacing: -0.2 },
+  titleSm: { fontSize: 15, fontWeight: '600' as const, lineHeight: 20 },
+  bodyLg: { fontSize: 16, fontWeight: '400' as const, lineHeight: 24 },
+  body: { fontSize: 14, fontWeight: '400' as const, lineHeight: 20 },
+  bodyMedium: { fontSize: 14, fontWeight: '600' as const, lineHeight: 20 },
+  bodySmall: { fontSize: 13, fontWeight: '400' as const, lineHeight: 18 },
+  bodySmallMedium: { fontSize: 13, fontWeight: '600' as const, lineHeight: 18 },
+  caption: { fontSize: 12, fontWeight: '400' as const, lineHeight: 16 },
+  captionMedium: { fontSize: 12, fontWeight: '600' as const, lineHeight: 16 },
+  badge: { fontSize: 11, fontWeight: '700' as const, lineHeight: 14 },
+  labelCaps: { fontSize: 11, fontWeight: '700' as const, lineHeight: 14, letterSpacing: 0.8, textTransform: 'uppercase' as const },
+  // Legacy aliases
+  hero: { fontSize: 30, fontWeight: '800' as const, lineHeight: 36 },
   h1: { fontSize: 24, fontWeight: '700' as const, lineHeight: 30 },
-  h2: { fontSize: 20, fontWeight: '600' as const, lineHeight: 26 },
-  h3: { fontSize: 18, fontWeight: '600' as const, lineHeight: 24 },
-  body: { fontSize: 15, fontWeight: '400' as const, lineHeight: 22 },
-  bodyMedium: { fontSize: 15, fontWeight: '500' as const, lineHeight: 22 },
-  caption: { fontSize: 13, fontWeight: '400' as const, lineHeight: 18 },
-  captionMedium: { fontSize: 13, fontWeight: '500' as const, lineHeight: 18 },
-  badge: { fontSize: 12, fontWeight: '600' as const, lineHeight: 16 },
-  kpiNumber: { fontSize: 26, fontWeight: '700' as const, lineHeight: 32 },
+  h2: { fontSize: 20, fontWeight: '700' as const, lineHeight: 26 },
+  h3: { fontSize: 17, fontWeight: '600' as const, lineHeight: 22 },
+  kpiNumber: { fontSize: 28, fontWeight: '800' as const, lineHeight: 34 },
 };
 
 export const SHADOWS = {
-  card: { shadowColor: '#131b2e', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
-  elevated: { shadowColor: '#131b2e', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 16, elevation: 5 },
-  subtle: { shadowColor: '#131b2e', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 2, elevation: 1 },
+  card: {
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  elevated: {
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 4,
+  },
+  subtle: {
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.02,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  lg: {
+    shadowColor: '#00875A',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    elevation: 6,
+  },
 };

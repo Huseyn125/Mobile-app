@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../../context/AppContext';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
@@ -28,18 +29,36 @@ const STATUS_OPTIONS: OrderStatus[] = [
 export default function OrderDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { orders, updateOrderStatus } = useApp();
 
   const order = orders.find((o) => o.id === id);
+
+  const getStatusLabel = (status: OrderStatus) => {
+    switch (status) {
+      case 'Pending':
+        return t('orders.statusPending');
+      case 'Confirmed':
+        return t('orders.statusConfirmed');
+      case 'Processing':
+        return t('orders.statusProcessing');
+      case 'Completed':
+        return t('orders.statusCompleted');
+      case 'Cancelled':
+        return t('orders.statusCancelled');
+      default:
+        return status;
+    }
+  };
 
   if (!order) {
     return (
       <View style={styles.notFoundContainer}>
         <EmptyState
-          title="Order Not Found"
-          description="The order you requested could not be located."
+          title={t('orders.orderNotFound')}
+          description={t('orders.orderNotFoundDesc')}
           icon="alert-circle"
-          actionTitle="Back to Orders"
+          actionTitle={t('orders.backToOrders')}
           onAction={() => router.back()}
         />
       </View>
@@ -60,10 +79,14 @@ export default function OrderDetailsScreen() {
       <Card variant="outlined" style={styles.headerCard}>
         <View style={styles.headerRow}>
           <View>
-            <Text style={styles.orderTitle}>Order #{order.id}</Text>
-            <Text style={styles.dateText}>Placed on {formatDate(order.createdAt)}</Text>
+            <Text style={styles.orderTitle}>
+              {t('orders.orderNumber', { id: order.id })}
+            </Text>
+            <Text style={styles.dateText}>
+              {t('orders.placedOn', { date: formatDate(order.createdAt) })}
+            </Text>
           </View>
-          <Badge label={order.status} status={order.status} />
+          <Badge label={getStatusLabel(order.status)} status={order.status} />
         </View>
       </Card>
 
@@ -71,16 +94,16 @@ export default function OrderDetailsScreen() {
       <Card variant="outlined" style={styles.sectionCard}>
         <View style={styles.sectionHeader}>
           <Feather name="user" size={16} color={COLORS.primary} style={styles.sectionIcon} />
-          <Text style={styles.sectionTitle}>Customer Information</Text>
+          <Text style={styles.sectionTitle}>{t('orders.customerInfo')}</Text>
         </View>
 
         <View style={styles.customerRow}>
-          <Text style={styles.customerLabel}>Customer Name:</Text>
+          <Text style={styles.customerLabel}>{t('orders.customerName')}</Text>
           <Text style={styles.customerValue}>{order.customerName}</Text>
         </View>
 
         <View style={styles.customerRow}>
-          <Text style={styles.customerLabel}>Email Address:</Text>
+          <Text style={styles.customerLabel}>{t('orders.customerEmail')}</Text>
           <Text style={styles.customerValue}>{order.customerEmail}</Text>
         </View>
       </Card>
@@ -89,7 +112,9 @@ export default function OrderDetailsScreen() {
       <Card variant="outlined" style={styles.sectionCard}>
         <View style={styles.sectionHeader}>
           <Feather name="shopping-bag" size={16} color={COLORS.primary} style={styles.sectionIcon} />
-          <Text style={styles.sectionTitle}>Purchased Items ({order.items.length})</Text>
+          <Text style={styles.sectionTitle}>
+            {t('orders.purchasedItems', { count: order.items.length })}
+          </Text>
         </View>
 
         {order.items.map((item, idx) => (
@@ -110,26 +135,26 @@ export default function OrderDetailsScreen() {
         <View style={styles.priceDivider} />
 
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Subtotal</Text>
+          <Text style={styles.summaryLabel}>{t('orders.subtotal')}</Text>
           <Text style={styles.summaryValue}>{formatCurrency(subtotal)}</Text>
         </View>
 
         <View style={styles.summaryRow}>
-          <Text style={styles.summaryLabel}>Shipping / Tax</Text>
+          <Text style={styles.summaryLabel}>{t('orders.shippingTax')}</Text>
           <Text style={styles.summaryValue}>$0.00</Text>
         </View>
 
         <View style={[styles.summaryRow, styles.totalRow]}>
-          <Text style={styles.totalLabel}>Total Amount</Text>
+          <Text style={styles.totalLabel}>{t('orders.totalAmount')}</Text>
           <Text style={styles.totalValue}>{formatCurrency(order.total)}</Text>
         </View>
       </Card>
 
       {/* Update Status Interactive Controls */}
       <Card variant="outlined" style={styles.sectionCard}>
-        <Text style={styles.sectionTitle}>Update Order Status</Text>
+        <Text style={styles.sectionTitle}>{t('orders.updateStatus')}</Text>
         <Text style={styles.statusSubtitle}>
-          Select status to update this order's processing phase:
+          {t('orders.updateStatusSubtitle')}
         </Text>
 
         <View style={styles.statusPickerRow}>
@@ -151,7 +176,7 @@ export default function OrderDetailsScreen() {
                     isCurrent && styles.statusOptionTextActive,
                   ]}
                 >
-                  {st}
+                  {getStatusLabel(st)}
                 </Text>
               </TouchableOpacity>
             );
@@ -160,7 +185,7 @@ export default function OrderDetailsScreen() {
       </Card>
 
       <Button
-        title="Back to Orders"
+        title={t('orders.backToOrders')}
         onPress={() => router.back()}
         variant="outline"
         size="lg"
@@ -212,105 +237,104 @@ const styles = StyleSheet.create({
     marginRight: SPACING.xs + 2,
   },
   sectionTitle: {
-    ...TYPOGRAPHY.h3,
-    fontSize: 16,
+    ...TYPOGRAPHY.bodyMedium,
+    fontWeight: '700',
     color: COLORS.textPrimary,
   },
   customerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: SPACING.xs + 2,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
   },
   customerLabel: {
-    ...TYPOGRAPHY.body,
+    ...TYPOGRAPHY.bodySmall,
     color: COLORS.textSecondary,
-    fontSize: 14,
   },
   customerValue: {
-    ...TYPOGRAPHY.bodyMedium,
+    ...TYPOGRAPHY.bodySmallMedium,
     color: COLORS.textPrimary,
-    fontSize: 14,
   },
   itemRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: SPACING.xs + 2,
+    paddingVertical: SPACING.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
   },
   itemInfo: {
     flex: 1,
-    marginRight: SPACING.sm,
+    marginRight: SPACING.md,
   },
   itemName: {
     ...TYPOGRAPHY.bodyMedium,
     color: COLORS.textPrimary,
+    marginBottom: 2,
   },
   itemQuantity: {
     ...TYPOGRAPHY.caption,
     color: COLORS.textSecondary,
-    marginTop: 2,
   },
   itemTotal: {
     ...TYPOGRAPHY.bodyMedium,
+    fontWeight: '600',
     color: COLORS.textPrimary,
   },
   priceDivider: {
     height: 1,
     backgroundColor: COLORS.border,
-    marginVertical: SPACING.md,
+    marginVertical: SPACING.sm,
   },
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 3,
+    paddingVertical: 4,
   },
   summaryLabel: {
-    ...TYPOGRAPHY.body,
-    fontSize: 14,
+    ...TYPOGRAPHY.bodySmall,
     color: COLORS.textSecondary,
   },
   summaryValue: {
-    ...TYPOGRAPHY.bodyMedium,
-    fontSize: 14,
+    ...TYPOGRAPHY.bodySmallMedium,
     color: COLORS.textPrimary,
   },
   totalRow: {
     marginTop: SPACING.xs,
     paddingTop: SPACING.xs,
     borderTopWidth: 1,
-    borderTopColor: COLORS.surfaceSubtle,
+    borderTopColor: COLORS.border,
   },
   totalLabel: {
-    ...TYPOGRAPHY.h3,
-    fontSize: 16,
+    ...TYPOGRAPHY.bodyMedium,
+    fontWeight: '700',
     color: COLORS.textPrimary,
   },
   totalValue: {
-    ...TYPOGRAPHY.h3,
-    fontSize: 18,
+    ...TYPOGRAPHY.h2,
     color: COLORS.primary,
   },
   statusSubtitle: {
     ...TYPOGRAPHY.caption,
     color: COLORS.textSecondary,
-    marginBottom: SPACING.md,
-    marginTop: 2,
+    marginBottom: SPACING.sm,
   },
   statusPickerRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: SPACING.xs + 2,
+    gap: SPACING.xs,
   },
   statusOption: {
     paddingHorizontal: SPACING.md,
-    paddingVertical: 6,
-    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.xs + 2,
+    borderRadius: RADIUS.full,
     backgroundColor: COLORS.surfaceSubtle,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: COLORS.border,
   },
   statusOptionActive: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: COLORS.primary,
     borderColor: COLORS.primary,
   },
   statusOptionText: {
@@ -318,8 +342,7 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
   },
   statusOptionTextActive: {
-    color: COLORS.primaryDark,
-    fontWeight: '700',
+    color: COLORS.surface,
   },
   backBtn: {
     marginTop: SPACING.xs,
